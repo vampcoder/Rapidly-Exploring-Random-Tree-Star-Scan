@@ -7,7 +7,7 @@ from math import sqrt,cos,sin,atan2
 XDIM = 640
 YDIM = 480
 WINSIZE = [XDIM, YDIM]
-EPSILON = 10.0
+EPSILON = 7.0
 NUMNODES = 5000
 dim = 2
 
@@ -42,11 +42,24 @@ class RRTAlgorithm:
             current = new_point
             pnt = [int(new_point[0]), int (new_point[1])]
             pygame.draw.line(screen, white, nearest_neighbour , new_point)
-            pygame.draw.circle(screen, (255, 0, 0), pnt, 1)
+            #pygame.draw.circle(screen, (255, 0, 0), pnt, 1)
             pygame.display.update()
             for e in pygame.event.get():
                 if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
-                    sys.exit("Leaving because you requested it.")
+                    sys.exit("Leaving .")
+
+        ret = Points.search(current, 100000000000000000000, None, None)
+        nde = ret[2]
+
+        while nde.parent != None:
+            pygame.draw.line(screen, (255, 0, 255), nde.point, nde.parent.point)
+            pygame.display.update()
+            nde = nde.parent
+            time.sleep(0.5)
+            for e in pygame.event.get():
+                if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
+                    sys.exit("Leaving.")
+
 
     def check(self, point , goal): # checking if currently added node is at goal or not
         if point[0] > goal[0]-5 and point[0] < goal[0]+5 and point[1] > goal[1]-5 and point[1] < goal[1]+5:
