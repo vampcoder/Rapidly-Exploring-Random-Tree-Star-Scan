@@ -7,7 +7,7 @@ from math import sqrt,cos,sin,atan2
 XDIM = 640
 YDIM = 480
 WINSIZE = [XDIM, YDIM]
-EPSILON = 7.0
+EPSILON = 20.0
 NUMNODES = 5000
 dim = 2
 
@@ -20,8 +20,9 @@ class RRTAlgorithm:
         pygame.init()
         screen = pygame.display.set_mode(WINSIZE)
         pygame.display.set_caption('RRT brute force')
-        white = 255, 240, 200
+        white = 100, 100, 100
         black = 20, 20, 40
+        bright = 255, 255, 255
         screen.fill(black)
 
         RRTree = node(source, [], None, True) #actual RRTree
@@ -52,10 +53,10 @@ class RRTAlgorithm:
         nde = ret[2]
 
         while nde.parent != None:
-            pygame.draw.line(screen, (255, 0, 255), nde.point, nde.parent.point)
+            pygame.draw.line(screen, bright, nde.point, nde.parent.point)
             pygame.display.update()
             nde = nde.parent
-            time.sleep(0.5)
+            time.sleep(0.1)
             for e in pygame.event.get():
                 if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
                     sys.exit("Leaving.")
