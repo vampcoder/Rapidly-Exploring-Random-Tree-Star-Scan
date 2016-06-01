@@ -11,31 +11,40 @@ class node:
         self.children.append(node1)
 
 class kdTree:
-    def __init__(self, left, right, axis, point, nde):
+    def __init__(self, left, right, axis, point, nde, parent):
         self.left = left
         self.right = right
         self.axis = axis
         self.point = point
         self.nde  = nde
+        self.parent = parent
 
     def insert(self, point, dim, nde): #for inserting a node in tree
         tp = self.point
         tx = self.axis
         if tp[tx] > point[tx]:
             if self.left == None:
-                self.left = kdTree(None, None, (tx+1)%dim, point, nde)
+                self.left = kdTree(None, None, (tx+1)%dim, point, nde, self)
             else:
                 self.left.insert(point, dim, nde)
         else:
             if self.right == None:
-                self.right = kdTree(None, None, (tx+1)%dim, point, nde)
+                self.right = kdTree(None, None, (tx+1)%dim, point, nde, self)
             else:
                 self.right.insert(point, dim, nde)
+
+    def dist(self, point):
+        total = 0
+        for i in range(len(point)):
+            total =  total + (self.point[i]-point[i])*(self.point[i]-point[i])
+        total = math.sqrt(total)
+        return total
 
     def search(self, point, dist, refp, nde): # for searching nearest neighbour
         axis = self.axis
         if self.left == None and self.right == None:
-            w = abs(self.point[axis]-point[axis])
+            #w = abs(self.point[axis]-point[axis])
+            w = self.dist(point)
             ret = []
             if w < dist:
                 ret.append(w)
@@ -49,7 +58,8 @@ class kdTree:
                 return ret
 
         else:
-            d = abs(self.point[axis]-point[axis])
+            d = self.dist(point)
+            #d = abs(self.point[axis]-point[axis])
             if d < dist:
                 dist = d
                 refp = self.point
@@ -77,7 +87,7 @@ class kdTree:
             return ret
 
     def findMin(self, d, dim): # for finding minimum node in subtree rooted at nde
-        print 'traverse', self.point
+        #print 'traverse', self.point
         if self.right == None and self.left == None:
             return self
 
@@ -93,13 +103,13 @@ class kdTree:
         temp2 = None
         if self.left == None:
             po = [100000000000 for i in range(dim)]
-            temp1 = kdTree(None, None, d, po, None)
+            temp1 = kdTree(None, None, d, po, None,None)
         else:
             temp1 = self.left.findMin(d, dim)
 
         if self.right == None:
             po = [100000000000 for i in range(dim)]
-            temp2 = kdTree(None, None, d, po, None)
+            temp2 = kdTree(None, None, d, po, None,None)
         else:
             temp2 = self.right.findMin(d, dim)
 
@@ -112,8 +122,30 @@ class kdTree:
         else:
             return temp2
 
-    def deleteNode(self): #for deleting a node nde
+    def set_none(self, node):
         pass
+
+    def deleteNode(self): #for deleting a node nde
+        if self.left == None and self.right == None:
+            if self.parent.left == self:
+                self.parent.left = None
+            else:
+                self.parent.right= None
+            del self
+            return
+        if self.right != None:
+            mini = self.right.findMin(self.axis)
+            self.point = mini.point
+            self.nde = mini.nde
+            mini.deleteNode()
+
+        elif self.left != None:
+            mini = self.left.findMin(self.axis)
+            self.point = mini.point
+            self.nde = mini.nde
+            self.right = self.left
+            self.left = None
+            mini.deleteNode()
 
     def print_tree(self):
         if self.left != None:
@@ -121,7 +153,6 @@ class kdTree:
         print self.point, self.axis
         if self.right != None:
             self.right.print_tree()
-
 
 def main():
     print 'Enter Points'
@@ -135,7 +166,7 @@ def main():
         for j in range(dim):
             point.append(int(input()))
         if root == None:
-            root = kdTree(None, None, 0, point, None)
+            root = kdTree(None, None, 0, point, None, None)
         else:
             root.insert(point, dim, None)
 
@@ -151,8 +182,16 @@ def main():
     print "Nearest Neighbour "
     print ret
     '''
+    print " "
+
     ret = root.findMin(0, dim)
     print ret.point, ret.axis
+    ret.deleteNode()
+    ret = root.findMin(1, dim)
+    print ret.point, ret.axis
+    print " "
+    ret.deleteNode()
+    root.print_tree()
 
 if __name__ == "__main__" :
     main()
