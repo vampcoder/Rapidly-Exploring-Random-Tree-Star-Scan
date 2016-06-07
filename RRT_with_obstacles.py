@@ -27,7 +27,6 @@ class RRTAlgorithm:
     def drawObstacles(self, screen):
         pygame.draw.circle(screen, (255, 255, 255), (320,240), 50)
 
-
     def checkObstacles(self, pnt, screen):
         pixelarray = pygame.PixelArray(screen)
         pnt = [int(pnt[0]), int(pnt[1])]
@@ -104,7 +103,6 @@ class RRTAlgorithm:
         else:
             theta = atan2(p2[1] - p1[1], p2[0] - p1[0])
             return [p1[0] + EPSILON * cos(theta), p1[1] + EPSILON * sin(theta)]
-
 
 def main():
     tree = RRTAlgorithm([500, 400], [5, 5], 2000)
