@@ -1,12 +1,5 @@
-import pygame,time
+import cv2
+img = cv2.imread('Images/obstacle.png')
 
-pygame.init()
-
-
-img = pygame.image.load('Images/obstacle1.png')
-screen = pygame.display.set_mode(img.get_rect().size)
-screen.blit(img, (0, 0))
-pygame.display.flip()
-
-time.sleep(300)
-
+cv2.imshow('image', img)
+k = cv2.waitKey(0)

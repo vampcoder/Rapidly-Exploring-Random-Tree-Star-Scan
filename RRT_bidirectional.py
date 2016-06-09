@@ -144,8 +144,7 @@ class RRTBidirectionalAlgorithm:
     def dist(self, p1, p2):  # returns euclid's distance between points p1 and p2
         return sqrt((p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1]))
 
-    def step_from_to(self, p1,
-                     p2):  # returns point with at most epsilon distance from nearest neighbour in the direction of randomly generated point
+    def step_from_to(self, p1, p2):  # returns point with at most epsilon distance from nearest neighbour in the direction of randomly generated point
         if self.dist(p1, p2) < EPSILON:
             return p2
         else:
