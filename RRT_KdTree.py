@@ -11,7 +11,7 @@ EPSILON = 20.0
 NUMNODES = 5000
 dim = 2
 
-class RRTAlgorithm:
+class RRTAlgorithm(object):
     def __init__(self, source, goal, nodes): #initial and destination coordinates and number of nodes
         print source, goal
         self.start(source, goal, nodes)
@@ -78,6 +78,6 @@ class RRTAlgorithm:
             return [p1[0] + EPSILON * cos(theta), p1[1] + EPSILON * sin(theta)]
 
 def main():
-    tree = RRTAlgorithm([320, 240], [5, 5], 2000)
+    tree = RRTAlgorithm([635, 475], [5, 5], 2000)
 
 main()

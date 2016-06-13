@@ -10,7 +10,7 @@ class node:
     def add_child(self, node1):
         self.children.append(node1)
 
-class kdTree:
+class kdTree(object):
     def __init__(self, left, right, axis, point, nde, parent):
         self.left = left
         self.right = right
