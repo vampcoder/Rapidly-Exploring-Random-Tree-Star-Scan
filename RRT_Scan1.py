@@ -15,7 +15,7 @@ flag = False
 EPSILON = 20.0
 NUMNODES = 5000
 dim = 2
-threshold = 5 #breaking condition of RRT loop
+threshold = 4 #breaking condition of RRT loop
 
 class pnt(object): #for heuristic implemantation
     def __init__(self, x, y, nde, goal):
@@ -95,9 +95,9 @@ class RRTmodifiedAlgo():
         #cv2.waitKey(0)
         while not self.check_same(t1, p2):
             t1 = [int(p1[0] + i * cos(theta)), int(p1[1] + i * sin(theta))]
-            if self.turn == 1:
-                cv2.circle(self.img, tuple(t1), 1, (0, 255, 0), 1)
-                cv2.waitKey(1)
+            # if self.turn == 1:
+            #     cv2.circle(self.img, tuple(t1), 1, (0, 255, 0), 1)
+            #     cv2.waitKey(1)
             if not self.checkBondaries(t1, self.img):
                 return True
             if self.img[int(t1[1])][int(t1[0])][0] == 255:
@@ -109,8 +109,8 @@ class RRTmodifiedAlgo():
         if self.black == None:
             return False
         ret = self.black.search(nn, 1000000000000000000000, None, None)
-        if self.turn == 1:
-            print ret[0]
+        # if self.turn == 1:
+        #     print ret[0]
         if ret[0] < 1:
             return True
         return False
@@ -120,7 +120,7 @@ class RRTmodifiedAlgo():
             print str
 
     def growRRT(self):
-        print "queus", self.queue.empty()
+        print "Queue Empty ? ", self.queue.empty()
         print 'Current ', self.current
         count = 0
         X, Y, Z = img.shape
@@ -131,7 +131,7 @@ class RRTmodifiedAlgo():
         cv2.imshow('image1', img1)
         cv2.waitKey(1)
 
-        while not self.goalFound and count < 50:
+        while not self.goalFound and count < 10:
 
             rand = [int(random.random() * Y * 1.0), int(random.random() * X * 1.0)]
             ret = self.Points.search(rand, 100000000000000, None, None)
@@ -139,7 +139,7 @@ class RRTmodifiedAlgo():
             new_point = self.step_from_to(nearest_neighbour, rand)
 
             if not self.check_for_black(nearest_neighbour, new_point):
-                self.printString("not a black node")
+                #self.printString("not a black node")
                 if not self.checkInsideBlack(nearest_neighbour):
                     if not self.check_for_gray(new_point):
                         self.printString("not a gray node even")
@@ -156,7 +156,7 @@ class RRTmodifiedAlgo():
                         if self.dist(new_point, nearest_neighbour) <= threshold:
                             count = count + 1
                     else:
-                        self.printString("gray node")
+                        #self.printString("gray node")
                         if self.gray == None:
                             self.gray = kdTree(None, None, 0, nearest_neighbour, ret[2], None)
                         ret = self.gray.search(nearest_neighbour, 10000000000000000000, None, None)
@@ -164,7 +164,7 @@ class RRTmodifiedAlgo():
                             self.gray.insert(nearest_neighbour, 2, ret[2])
                             self.queue.put(pnt(nearest_neighbour[0], nearest_neighbour[1], ret[2], self.goal))
             else:
-                self.printString("black node")
+                #self.printString("black node")
                 if self.black == None:
                     self.black = kdTree(None, None, 0, nearest_neighbour, ret[2], None)
                 ret = self.black.search(nearest_neighbour, 100000000000000000, None, None)
@@ -262,6 +262,7 @@ class RRTmodifiedAlgo():
 
         print "heuristic ", p.nde.point
         cv2.circle(self.img, tuple(p.nde.point), 3, (0, 255, 0), 3)
+        cv2.circle(self.img, tuple(self.goal), 3, (0, 255, 0), 3)
         cv2.imshow('image1', self.img)
         cv2.waitKey(0)
 
@@ -280,10 +281,8 @@ class RRTmodifiedAlgo():
         while not self.check_goal() and not self.goalFound:
             self.markVisibleArea(img, self.img, self.current[1], self.current[0])
             print "visible marked"
-            #time.sleep(5)
             self.growRRT()
             print "Tree has been grown"
-            #time.sleep(5)
             self.walk_step()
             print "Step has been taken"
             time.sleep(5)

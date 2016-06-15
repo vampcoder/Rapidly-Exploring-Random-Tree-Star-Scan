@@ -6,9 +6,19 @@ class node:
         self.point = point
         self.parent = parent
         self.actual = actual
+        self.cost = 0
+        if self.parent != None:
+            self.cost = self.parent.cost + math.hypot(self.point[0]-self.parent.point[0], self.point[1]-self.parent.point[1])
 
     def add_child(self, node1):
         self.children.append(node1)
+
+    def updateCost(self):
+        if self.children == None:
+            return
+        for i in range(len(self.children)):
+            self.children[i].cost = self.cost + math.hypot(self.point[0]-self.children[i].point[0], self.point[1]-self.children[i].point[1])
+            self.children[i].updateCost()
 
 class kdTree(object):
     def __init__(self, left, right, axis, point, nde, parent):
@@ -40,7 +50,7 @@ class kdTree(object):
         total = math.sqrt(total)
         return total
 
-    def search(self, point, dist, refp, nde): # for searching nearest neighbour
+    def search(self, point, dist, refp, nde, kdlink): # for searching nearest neighbour
         axis = self.axis
         if self.left == None and self.right == None:
             #w = abs(self.point[axis]-point[axis])
@@ -50,11 +60,13 @@ class kdTree(object):
                 ret.append(w)
                 ret.append(self.point)
                 ret.append(self.nde)
+                ret.append(self)
                 return ret
             else:
                 ret.append(dist)
                 ret.append(refp)
                 ret.append(nde)
+                ret.append(kdlink)
                 return ret
 
         else:
@@ -64,26 +76,30 @@ class kdTree(object):
                 dist = d
                 refp = self.point
                 nde = self.nde
+                kdlink = self
             if point[axis] <= self.point[axis]:
                 if point[axis]-dist <= self.point[axis] and self.left != None:
-                    ret = self.left.search(point, dist, refp, nde)
+                    ret = self.left.search(point, dist, refp, nde, kdlink)
                     dist = ret[0]
                     refp = ret[1]
                     nde = ret[2]
+                    kdlink = ret[3]
                 if point[axis]+dist > self.point[axis] and self.right != None:
-                    return self.right.search(point, dist, refp, nde)
+                    return self.right.search(point, dist, refp, nde, kdlink)
             else:
                 if point[axis] + dist > self.point[axis] and self.right != None:
-                    ret = self.right.search(point, dist, refp, nde)
+                    ret = self.right.search(point, dist, refp, nde, kdlink)
                     dist = ret[0]
                     refp = ret[1]
                     nde = ret[2]
+                    kdlink = ret[3]
                 if point[axis] - dist <= self.point[axis] and self.left != None:
-                    return self.left.search(point, dist, refp, nde)
+                    return self.left.search(point, dist, refp, nde, kdlink)
             ret = []
             ret.append(dist)
             ret.append(refp)
             ret.append(nde)
+            ret.append(kdlink)
             return ret
 
     def findMin(self, d, dim): # for finding minimum node in subtree rooted at nde
@@ -134,13 +150,13 @@ class kdTree(object):
             del self
             return
         if self.right != None:
-            mini = self.right.findMin(self.axis)
+            mini = self.right.findMin(self.axis, dim)
             self.point = mini.point
             self.nde = mini.nde
             mini.deleteNode()
 
         elif self.left != None:
-            mini = self.left.findMin(self.axis)
+            mini = self.left.findMin(self.axis, dim)
             self.point = mini.point
             self.nde = mini.nde
             self.right = self.left
@@ -154,9 +170,11 @@ class kdTree(object):
         if self.right != None:
             self.right.print_tree()
 
+dim = 0
 def main():
     print 'Enter Points'
     n = int(input()) # number of points
+    global dim
     dim = int(input()) #number of dimensions
 
     root = None
@@ -184,13 +202,18 @@ def main():
     '''
     print " "
 
-    ret = root.findMin(0, dim)
-    print ret.point, ret.axis
-    ret.deleteNode()
-    ret = root.findMin(1, dim)
-    print ret.point, ret.axis
+    #ret = root.findMin(0, dim)
+    #print ret.point, ret.axis
+    #ret.deleteNode()
+    #ret = root.findMin(1, dim)
+
+    #print ret.point, ret.axis
+
+    ret = root.search([35, 90], 100000000000000000, None, None, None)
     print " "
-    ret.deleteNode()
+
+    ret[3].deleteNode()
+    #ret.deleteNode()
     root.print_tree()
 
 if __name__ == "__main__" :

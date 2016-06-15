@@ -59,12 +59,12 @@ class RRTBidirectionalAlgorithm:
 
             #Doing work for first tree
             rand = self.getPoints(goal)
-            ret = Points1.search(rand, 100000000000000000, None, None)
+            ret = Points1.search(rand, 100000000000000000, None, None, None)
             nearest_neighbour = ret[1]
             new_point = self.step_from_to(nearest_neighbour, rand)
             while self.checkObstacles(new_point, screen):
                 rand = self.getPoints(goal)
-                ret = Points1.search(rand, 100000000000000000, None, None)
+                ret = Points1.search(rand, 100000000000000000, None, None, None)
                 nearest_neighbour = ret[1]
                 new_point = self.step_from_to(nearest_neighbour, rand)
 
@@ -80,7 +80,7 @@ class RRTBidirectionalAlgorithm:
             #print 'a'
 
             #repeating same thing for second tree but not towards random point but towards the point generated in last tree i.e, new_point
-            ret = Points2.search(new_point, 100000000000000000, None, None)
+            ret = Points2.search(new_point, 100000000000000000, None, None, None)
             nearest_neighbour = ret[1]
             current = self.step_from_to(nearest_neighbour, new_point)
 
@@ -111,9 +111,9 @@ class RRTBidirectionalAlgorithm:
             Points2 = temp1
             RRTree2 = temp2
 
-        ret1 = Points1.search(current, 100000000000000000000, None, None)
+        ret1 = Points1.search(current, 100000000000000000000, None, None, None)
         nde1 = ret1[2]
-        ret2 = Points2.search(current, 100000000000000000000, None, None)
+        ret2 = Points2.search(current, 100000000000000000000, None, None, None)
         nde2 = ret2[2]
 
         while nde1.parent != None:
