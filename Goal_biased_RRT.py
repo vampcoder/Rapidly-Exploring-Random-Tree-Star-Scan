@@ -35,13 +35,13 @@ class RRTAlgorithm:
         screen.fill(black)
 
         RRTree = node(source, [], None, True) #actual RRTree
-        Points = kdTree(None, None, 0, source, RRTree, None) #for storing generated points to increase the search complexity
+        Points = kdTree(None, None, 0, source, RRTree) #for storing generated points to increase the search complexity
         current = source
 
         while not self.check(current, goal):
             rand = self.getPoints(goal)
 
-            ret = Points.search(rand, 100000000000000, None, None, None)
+            ret = Points.search(rand, 100000000000000, None, None, None, None, None)
             nearest_neighbour = ret[1]
             new_point = self.step_from_to(nearest_neighbour, rand)
             #print rand, nearest_neighbour, new_point
@@ -58,7 +58,7 @@ class RRTAlgorithm:
                 if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
                     sys.exit("Leaving .")
 
-        ret = Points.search(current, 100000000000000000000, None, None, None)
+        ret = Points.search(current, 100000000000000000000, None, None, None, None, None)
         nde = ret[2]
 
         while nde.parent != None:
