@@ -13,73 +13,7 @@ EPSILON = 50
 NUMNODES = 5000
 dim = 2
 RADIUS = 20
-
-class xpoint:
-    def __init__(self, pnt):
-        self.x = pnt[0]
-        self.ypoint = ypoint(self, pnt[1])
-        self.left = None
-        self.right = None
-        self.count = 1
-        self.points = [pnt]
-        pass
-
-    def insertpoint(self, pnt):
-        self.count = self.count + 1
-        if pnt[0] < self.x:
-            if self.left == None:
-                self.left = xpoint(pnt)
-            else:
-                self.left.insertpoint(pnt)
-        elif pnt[0] > self.x:
-            if self.right == None:
-                self.right = xpoint(pnt)
-            else:
-                self.right.insertpoint(pnt)
-        else:
-            self.points.append(pnt)
-            self.ypoint.insertpnt(self, pnt[1])
-
-    def query(self, l , r):
-        pass
-
-class ypoint:
-    def __init__(self, xpnt, y):
-        self.xpnt = xpnt
-        self.y = y
-        self.pnts = [y]
-        self.count = 1
-        self.right = None
-        self.left = None
-        pass
-
-    def insertpnt(self, xpnt, y):
-        self.count = self.count + 1
-        if y < self.y:
-            self.pnts = [y] + self.pnts
-            if self.left == None:
-                self.left = ypoint(xpnt, y)
-            else:
-                self.left.insertpnt(xpnt, y)
-        else:
-            self.pnts.append(y)
-            if self.right == None:
-                self.right = ypoint(xpnt, y)
-            else:
-                self.right.insertpnt(xpnt, y)
-
-    def query(self, l, r):
-        if self.y < l:
-            if self.right != None:
-                return self.right.query(l, r)
-            else:
-                return []
-        elif self.y > r:
-            if self.left != None:
-                return self.left.query(l, r)
-            else:
-                return []
-        pass
+p = 2
 
 class RRTAlgorithm(object):
     def __init__(self, source, goal, nodes): #initial and destination coordinates and number of nodes
@@ -104,6 +38,15 @@ class RRTAlgorithm(object):
         return new_point
         pass
 
+    def generatePoints(self, Pointmap):
+        prob = 100.0*random.random()
+        if prob < p:
+             return self.goal
+        else:
+            rand = [int(random.random() * 640.0), int(random.random() * 480.0)]
+            while Pointmap[rand[0]][rand[1]] == 1:
+                rand = [int(random.random() * 640.0), int(random.random() * 480.0)]
+            return rand
     def sortdist(self, n):
         return n[1]
 
@@ -150,7 +93,6 @@ class RRTAlgorithm(object):
         ret = Points.search(new_point, 1000000000000000000, None, None, None, None, None)
         nodes = []
 
-        #nodes = self.findKNN(new_point, Pointmap)
         nodes = Points.searchNN(new_point, RADIUS)
         #print len(nodes)
         flag = False
@@ -254,9 +196,7 @@ class RRTAlgorithm(object):
 
         while not self.check(current, goal):
 
-            rand = [int(random.random() * 640.0), int(random.random() * 480.0)]
-            while Pointmap[rand[0]][rand[1]] == 1:
-                rand = [int(random.random() * 640.0), int(random.random() * 480.0)]
+            rand = self.generatePoints(Pointmap)
             current = self.addConnections(Points, Pointmap, rand, screen, source)
             count = count + 1
             #current = self.addConnection1(Points, rand, screen)
@@ -285,16 +225,12 @@ class RRTAlgorithm(object):
         print 'count', count
         self.path = path
         for i in range(10000-count):
-            rand = [int(random.random() * 640.0), int(random.random() * 480.0)]
-            while Pointmap[rand[0]][rand[1]] == 1:
-                rand = [int(random.random() * 640.0), int(random.random() * 480.0)]
+            rand = self.generatePoints(Pointmap)
             current = self.addConnections(Points, Pointmap, rand, screen, source)
             pygame.display.update()
             for e in pygame.event.get():
                 if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
                     sys.exit("Leaving.")
-
-            pass
 
     def printchildren(self, nde):
         print nde.point, nde.cost
