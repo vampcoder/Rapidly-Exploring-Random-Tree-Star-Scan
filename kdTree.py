@@ -1,5 +1,5 @@
 import math
-
+import Queue
 class node:
     def __init__(self, point, children, parent, actual, cost = 0): # node of RRT
         self.children = children # list of all children as a sigle node may have multiple number of nodes
@@ -12,11 +12,20 @@ class node:
         self.children.append(node1)
 
     def propogateCost(self):
-        if self in self.children:
-            self.children.remove(self)
-        for i in self.children:
-            i.cost = self.cost + math.hypot(i.point[0]-self.point[0], i.point[1]-self.point[1])
-            i.propogateCost()
+        q = Queue.Queue()
+        q.put(self)
+        # if self in self.children:
+        #     self.children.remove(self)
+        #     print "yes "
+        # if self.parent in self.children:
+        #     self.children.remove(self.parent)
+        #     print "yes parent"
+        #     return
+        while not q.empty():
+            j = q.get()
+            for i in j.children:
+                i.cost = j.cost + math.hypot(i.point[0]-j.point[0], i.point[1]-j.point[1])
+                q.put(i)
 
 class kdTree(object):
     def __init__(self, left, right, axis, point, nde):
