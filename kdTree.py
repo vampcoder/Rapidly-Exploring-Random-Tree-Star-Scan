@@ -14,13 +14,6 @@ class node:
     def propogateCost(self):
         q = Queue.Queue()
         q.put(self)
-        # if self in self.children:
-        #     self.children.remove(self)
-        #     print "yes "
-        # if self.parent in self.children:
-        #     self.children.remove(self.parent)
-        #     print "yes parent"
-        #     return
         while not q.empty():
             j = q.get()
             for i in j.children:

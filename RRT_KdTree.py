@@ -78,6 +78,6 @@ class RRTAlgorithm(object):
             return [p1[0] + EPSILON * cos(theta), p1[1] + EPSILON * sin(theta)]
 
 def main():
-    tree = RRTAlgorithm([635, 475], [5, 5], 2000)
+    tree = RRTAlgorithm([635, 475], [-5, -5], 2000)
 
 main()

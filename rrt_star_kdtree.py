@@ -3,7 +3,7 @@ from kdTree import node
 import sys, random, pygame ,time
 from pygame.locals import *
 from math import sqrt,cos,sin,atan2, hypot
-import kdtree
+# import kdtree
 import numpy as np
 
 XDIM = 640
@@ -12,7 +12,7 @@ WINSIZE = [XDIM, YDIM]
 EPSILON = 50
 NUMNODES = 5000
 dim = 2
-RADIUS = 20
+RADIUS = 10
 
 class xpoint:
     def __init__(self, pnt):
@@ -245,7 +245,7 @@ class RRTAlgorithm(object):
 
         RRTree = node(source, [], None, True) #actual RRTree
         Points = kdTree(None, None, 0, source, RRTree) #for storing generated points to increase the search complexity
-        NearestNeighbourTree = kdtree.create([source]) # for storing points same as Points, using it for finding points in a range
+        #NearestNeighbourTree = kdtree.create([source]) # for storing points same as Points, using it for finding points in a range
         current = source
         Pointmap = [[0 for i in range (YDIM)] for i in range(XDIM)]
         Pointmap[source[0]][source[1]] = 1

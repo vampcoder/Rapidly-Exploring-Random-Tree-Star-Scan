@@ -15,8 +15,8 @@ WINSIZE = [XDIM, YDIM]
 EPSILON = 10
 NUMNODES = 5000
 dim = 2
-RADIUS = 20
-p = 10
+RADIUS = 15
+p = 5
 flag = False
 
 class RRTAlgorithm(object):
@@ -78,114 +78,56 @@ class RRTAlgorithm(object):
         return hypot(p1[0]-p2[0], p1[1]-p2[1])
 
     def addConnections(self, Points, source):
+
         new_point = self.generatePoints()
-        # print new_point
         ret = Points.search(new_point, 1000000000000000000, None, None, None, None, None)
-        nodes = []
-
-        nodes = Points.searchNN(new_point, RADIUS)
-        # print len(nodes)
-        flag = False
-        for i in nodes:
-            if ret[1] == i[0]:
-                flag = True
-                break
-        if not flag:
-            nodes.append((ret[1], ret[0]))
-
-        sorted(nodes, key=self.sortdist)
-
-        nn = nodes[0][0]
-        # print 'nn ', nn
-        cost = []
-        for i in nodes:
-            cost.append(Points.search(i[0], 100000000000000000000, None, None, None, None, None)[2].cost)
-        mincost = 10000000000000000000000000
-        for i in range(len(nodes)):
-            nn1 = nodes[i][0]
-            if cost[i] + nodes[i][1] < mincost:
-                mincost = cost[i] + nodes[i][1]
-                nn = nn1
-        pnt = nn
-        ret = Points.search(pnt, 100000000000000, None, None, None, None, None)
         nearest_neighbour = ret[1]
         new_point = self.step_from_to(nearest_neighbour, new_point)
-
         new_point = [int(new_point[0]), int(new_point[1])]
 
         while self.checkforObstacles(new_point, nearest_neighbour):
             new_point = self.generatePoints()
-            #print new_point
             ret = Points.search(new_point, 1000000000000000000, None, None, None, None, None)
-            nodes = []
-
-            nodes = Points.searchNN(new_point, RADIUS)
-            #print len(nodes)
-            flag = False
-            for i in nodes:
-                if ret[1] == i[0]:
-                    flag = True
-                    break
-            if not flag:
-                nodes.append((ret[1], ret[0]))
-
-            sorted(nodes, key = self.sortdist)
-
-            nn = nodes[0][0]
-            #print 'nn ', nn
-            cost = []
-            for i in nodes:
-                cost.append(Points.search(i[0], 100000000000000000000, None, None, None, None, None)[2].cost)
-            mincost = 10000000000000000000000000
-            for i in range(len(nodes)):
-                nn1 = nodes[i][0]
-                if cost[i] + nodes[i][1] < mincost:
-                    mincost = cost[i] + nodes[i][1]
-                    nn = nn1
-            pnt = nn
-            ret  = Points.search(pnt, 100000000000000, None, None, None, None, None)
             nearest_neighbour = ret[1]
             new_point = self.step_from_to(nearest_neighbour, new_point)
-
             new_point = [int(new_point[0]), int(new_point[1])]
-            #Pointmap[new_point[0]][new_point[1]] = 1
-        cv2.line(img, tuple(nn), tuple(new_point), (100, 100, 100), 1)
-        c = mincost
-        nde = node(new_point, [], ret[2], True, c)
-        ret[2].add_child(nde)
+
+        #print new_point
+        nos = Points.searchNN(new_point, RADIUS)
+        #print len(nos)
+        cost = 100000000000
+        parent = None
+        nodes = []
+        for i in nos:
+            ret = Points.search(i[0], 1000000000000000000000, None, None, None, None, None)
+            if ret[2].cost + self.dist(new_point, ret[1]) < cost:
+                cost = ret[2].cost + self.dist(new_point, ret[1])
+                parent  = ret[2]
+
+            nodes.append(ret)
+
+        cv2.line(img, tuple(parent.point), tuple(new_point), (100, 100, 100), 1)
+        nde = node(new_point, [], parent, True, cost)
+        parent.add_child(nde)
         Points.insert(new_point, 2, nde)
-
-        '''
-
-        Update Other links
-
-        '''
 
         flag = False
         if self.goalNode !=None:
             flag = True
-            if self.path != None:
-                for i in nodes:
-                    pnt1 = i[0]
-                    if pnt != pnt1 and pnt1 in self.path:
-                        flag = True
         if flag:
             nde1 = self.goalNode
             while nde1.parent != None:
                 cv2.line(img, tuple(nde1.point), tuple(nde1.parent.point), (100, 100, 100), 1)
                 nde1 = nde1.parent
-            #print "rubbed"
-            #time.sleep(10)
-            #cv2.imshow('rubbed', img)
-            #cv2.waitKey(0)
 
-        for i in range(len(nodes)):
-            pnt = nodes[i][0]
-            if pnt != nearest_neighbour and pnt != source:
-                if cost[i] > c + hypot(pnt[0]-new_point[0], pnt[1]-new_point[1]) and hypot(pnt[0]-new_point[0], pnt[1]-new_point[1]) < EPSILON:
-                    child = Points.search(pnt, 10000000000000000000000000, None, None, None, None, None)[2]
-                    child.cost = c + hypot(pnt[0] - new_point[0], pnt[1] - new_point[1])
-                    self.createNewLink(child, nde)
+
+
+        for i in nodes:
+            if i[1] != parent.point:
+                if i[2].cost > self.dist(i[1], new_point) + cost:
+                    i[2].cost = self.dist(i[1], new_point) + cost
+                    self.createNewLink(i[2], nde)
+
 
         if flag:
             nodes = Points.searchNN(self.goal, 10)
@@ -285,6 +227,6 @@ class RRTAlgorithm(object):
 def main():
     tree = RRTAlgorithm()
 
-img = cv2.imread('Images/test.png')
+img = cv2.imread('Images\\test.png')
 
 main()

@@ -12,11 +12,12 @@ import Queue as Q
 sx, sy = -1, -1
 dx, dy = -1, -1
 flag = False
-EPSILON = 20.0
+EPSILON = 25.0
 NUMNODES = 5000
 dim = 2
-threshold = 4 #breaking condition of RRT loop
-p = 5
+threshold = 5 #breaking condition of RRT loop
+p = 10
+RADIUS = 30
 
 img = cv2.imread('Images/obstacle.png')
 
@@ -37,7 +38,103 @@ class RRTmodifiedAlgo():
         self.goalFound = False
         self.extraPoints = []
         self.steps = []
+        self.goalNode = None
+        self.allpoints = []
         self.startProcessing()
+
+    def sortdist(self, n):
+        return n[1]
+
+    def createNewLink(self, childlink, parentlink):
+
+        pnt = childlink.point
+        while True:
+            childlink.propogateCost()
+            oldParent = childlink.parent
+            oldParent.children.remove(childlink)
+            childlink.parent = parentlink
+            parentlink.children.append(childlink)
+            if oldParent.cost > childlink.cost + self.dist(oldParent.point, childlink.point):
+                oldParent.cost = childlink.cost + self.dist(oldParent.point, childlink.point)
+                if pnt == childlink.point:
+                    cv2.line(self.treeimage, tuple(reversed(parentlink.point)), tuple(reversed(childlink.point)), 0, 1)
+                    cv2.line(self.tempimg, tuple(reversed(parentlink.point)), tuple(reversed(childlink.point)), 0, 1)
+                parentlink = childlink
+                childlink = oldParent
+
+            else:
+                cv2.line(self.treeimage, tuple(reversed(oldParent.point)), tuple(reversed(childlink.point)), 100, 1)
+                cv2.line(self.tempimg, tuple(reversed(oldParent.point)), tuple(reversed(childlink.point)), 100, 1)
+                break
+
+    def addConnections(self):
+            source = self.current
+            c = 0
+            flag1 = False
+            cost = []
+            nodes = []
+            pnt = None
+            new_point = None
+            nearest_neighbour = None
+            ret = None
+
+            while not flag1:
+                # finding the nearest point to generated point
+                new_point = self.generatePoints()
+                ret = self.Points.search(new_point, 1000000000000000000, None, None, None, None, None)
+                nearest_neighbour = ret[1]
+                new_point = self.step_from_to(nearest_neighbour, new_point)
+                new_point = [int(new_point[0]), int(new_point[1])]
+                if not self.check_for_black(nearest_neighbour, new_point):
+                    if not self.check_for_gray(new_point):
+                        flag1 = True
+                        break
+
+            nos = self.Points.searchNN(new_point, RADIUS)
+            # print len(nos)
+            cost = 100000000000
+            parent = None
+            nodes = []
+            for i in nos:
+                ret = self.Points.search(i[0], 1000000000000000000000, None, None, None, None, None)
+                if ret[2].cost + self.dist(new_point, ret[1]) < cost:
+                    cost = ret[2].cost + self.dist(new_point, ret[1])
+                    parent = ret[2]
+
+                nodes.append(ret)
+
+            cv2.line(self.treeimage, tuple(reversed(parent.point)), tuple(reversed(new_point)), 0, 1)
+            cv2.line(self.tempimg, tuple(reversed(parent.point)), tuple(reversed(new_point)), 0, 1)
+
+            nde = node(new_point, [], parent, True, cost)
+            parent.add_child(nde)
+            self.Points.insert(new_point, 2, nde)
+
+            '''
+            Update Other links
+            '''
+            for i in nodes:
+                if i[1] != parent.point:
+                    if i[2].cost > self.dist(i[1], new_point) + cost:
+                        i[2].cost = self.dist(i[1], new_point) + cost
+                        self.createNewLink(i[2], nde)
+
+            return new_point, parent.point
+
+    def updateTree(self):
+        self.RRTree = node(self.current, [], None, True)  # Permanent RRTree
+        self.Points1 = kdTree(None, None, 0, self.current, self.RRTree)
+        q = Q.Queue()
+        nos = self.Points.searchNN(self.current, RADIUS)
+        for i in nos:
+            if i[0] != self.current:
+                q.put(i[0])
+                break
+
+        while not q.empty():
+            current = q.get()
+
+        pass
 
     def dist(self, p1, p2):
         return hypot(p1[0]-p2[0], p1[1]-p2[1])
@@ -98,7 +195,7 @@ class RRTmodifiedAlgo():
     def generateGoalBiasPoints(self):
         x = random.random()*100
         X,Y = self.img.shape
-        if x > 70:
+        if x > 90:
             return [int(random.random() * (X-1) * 1.0), int(random.random() * (Y-1) * 1.0)]
         else:
             return self.goal
@@ -107,6 +204,23 @@ class RRTmodifiedAlgo():
         if p[0]< self.goal[0] + 2 and p[0] > self.goal[0]-2 and p[1] < self.goal[1]+2 and p[1] > self.goal[1]-2:
             return True
         return False
+
+
+
+    def updateRoot(self, current):
+        self.RRTree.children.remove(current)
+        current.children.append(self.RRTree)
+        self.RRTree.parent = current
+        current.parent = None
+        self.RRTree = current
+
+    def checkCost(self, root):
+        ret = self.Points.search(root.point, 1000000000000000000, None, None, None, None, None)
+        if root.cost != ret[2].cost:
+            print root.cost, ret[2].cost, ret[0]
+        for i in root.children:
+            self.checkCost(i)
+        pass
 
     def goalBiastempRRT(self): #grow tree with goal bias-ness
 
@@ -134,23 +248,30 @@ class RRTmodifiedAlgo():
                     self.tempPoints.insert(new_point, dim, nde)
                 self.extraPoints.append(new_point)
                 if self.checkIfGoalFound(new_point):
+
+
                     while nde.parent.point != self.current:
                         nde = nde.parent
-                    nde1 = nde.parent
-                    nde.parent = None
-                    nde.children.append(nde1)
-                    nde1.children.remove(nde)
-                    nde1.parent = nde
-                    cv2.line(self.img, tuple(reversed(self.current)), tuple(reversed(nde.point)), 200 , 1)
+                    self.updateRoot(nde)
+                    # nde.parent.parent = nde
+                    # nde.parent = None
+                    cv2.line(self.treeimage, tuple(reversed(self.current)), tuple(reversed(nde.point)), 200 , 1)
                     self.steps.append([self.current, nde.point])
                     self.current = nde.point
                     break
                 cv2.line(self.tempimg, tuple(reversed(nearest_neighbour)), tuple(reversed(new_point)), 200, 1)
-                cv2.circle(self.tempimg, tuple(reversed(self.goal)), 3, 200 , 3)
+                cv2.circle(self.tempimg, tuple(reversed(self.goal)), 3, 150 , 3)
                 cv2.imshow('image2', self.tempimg)
                 k = cv2.waitKey(1)
                 if k == 27:
                     exit()
+
+        rand = self.generateGoalBiasPoints()
+        nde = self.Points.search(rand, 100000000000000, None, None, None, None, None)[2]
+        while nde.parent != None:
+            nde = nde.parent
+        print 'nde', nde.point, self.current
+        time.sleep(100)
 
     def removegeneratedLeafNodes(self):
         for rrtnode in self.leafNodes:
@@ -178,38 +299,27 @@ class RRTmodifiedAlgo():
         else:
             return self.goal
 
-    def normalRRT(self):
+    def normalRRT(self, count1):
         count = 0
-        X, Y = img.shape[:2]
+        X, Y, Z = img.shape
         self.tempimg = copy.copy(self.treeimage)
-        while not self.goalFound and count < 10:
-            rand = self.generatePoints()
-            if not self.checkBondaries(rand, self.img):
-                continue
-            ret = self.Points.search(rand, 100000000000000, None, None, None, None, None)
-            nearest_neighbour = ret[1]
-            new_point = self.step_from_to(nearest_neighbour, rand)
+        while count < count1:
+            new_point, nearest_neighbour = self.addConnections()
+            self.allpoints.append(new_point)
 
-            if not self.check_for_black(nearest_neighbour, new_point):
-                if not self.check_for_gray(new_point):
-                    #print new_point
-                    nde = node(new_point, [], ret[2], True)
-                    ret[2].add_child(nde)
-                    self.Points.insert(new_point, dim, nde)
-                    if self.dist(new_point, nearest_neighbour) <= threshold:
-                        count = count + 1
+            if self.dist(new_point, nearest_neighbour) <= threshold:
+                count = count + 1
 
-                    cv2.line(self.treeimage, tuple(reversed(nearest_neighbour)), tuple(reversed(new_point)), (0, 0, 255), 1)
-                    cv2.imshow('image1', self.treeimage)
-                    cv2.line(self.tempimg, tuple(reversed(nearest_neighbour)), tuple(reversed(new_point)), (0, 0, 255), 1)
-                    cv2.imshow('image2', self.tempimg)
-                    k = cv2.waitKey(1)
+            cv2.imshow('image1', self.treeimage)
+            cv2.imshow('image2', self.tempimg)
+            k = cv2.waitKey(1)
+            if k == 27:
+                exit()
 
-                    if k == 27:
-                        exit()
-                    if self.checkIfGoalFound(new_point):
-                        self.goalFound = True
-                        break
+            if self.checkIfGoalFound(new_point):
+                self.goalFound = True
+                self.goalNode = self.Points.search(self.goal, 1000000000000000000, None, None, None, None, None)[2]
+        print 'count', count
 
     def recPrint(self, point):
         if point.left != None:
@@ -220,18 +330,29 @@ class RRTmodifiedAlgo():
         if point.right != None:
             self.recPrint(point.right)
 
-
     def printWholeTree(self):
         self.treeimage = copy.copy(self.img)
         self.recPrint(self.Points)
+        if self.goalFound:
+            nodes = self.Points.searchNN(self.goal, 10)
+            sorted(nodes, key=self.sortdist)
+            pnt = nodes[0][0]
+            self.path = []
+            nde = self.goalNode = self.Points.search(pnt, 1000000000000000000, None, None, None, None, None)[2]
+            while nde.parent != None:
+                cv2.line(self.treeimage, tuple(reversed(nde.point)), tuple(reversed(nde.parent.point)), 200, 1)
+                self.path.append(nde.point)
+                nde = nde.parent
         for i in self.steps:
             cv2.line(self.treeimage, tuple(reversed(i[0])), tuple(reversed(i[1])), 200, 1)
         # cv2.imshow('new_tree', self.treeimage)
         # cv2.waitKey(0)
 
-    def growRRT(self):
+    def growRRT(self, count):
         self.printWholeTree()
-        self.normalRRT()
+        self.normalRRT(count)
+        self.checkCost(self.RRTree)
+        time.sleep(100)
         if self.goalFound:
             return
         print len(self.leafNodes)
@@ -329,15 +450,24 @@ class RRTmodifiedAlgo():
         arr = np.zeros(img.shape[:2], np.uint8)
         self.img = arr
         self.treeimage = np.zeros(img.shape[:2], np.uint8)
-        #self.markVisibleArea(img)
-        while not self.check_goal() and not self.goalFound:
+        count = 0
+        # #self.markVisibleArea(img)
+        # while not self.check_goal() and not self.goalFound:
+        while not self.goalFound:
             self.markVisibleArea(img)
             # cv2.imshow('image', self.img)
             # k = cv2.waitKey(0)
             print "visible marked"
-            self.growRRT()
+            if count == 0:
+                self.growRRT(50)
+            else:
+                self.growRRT(10)
+            count = count + 1
             print "Tree has been grown"
         print "goal Reached"
+        self.printWholeTree()
+        cv2.imshow('finalpath', self.treeimage)
+        cv2.waitKey(0)
 
 start = RRTmodifiedAlgo()
 
