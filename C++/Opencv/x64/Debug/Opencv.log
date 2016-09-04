@@ -1,0 +1,16 @@
+﻿  RRT-star-Implementation.cpp
+c:\users\bhaskar\documents\visual studio 2015\projects\opencv\opencv\rrt-star-implementation.cpp(276): warning C4305: 'initializing': truncation from '__int64' to 'int'
+c:\users\bhaskar\documents\visual studio 2015\projects\opencv\opencv\rrt-star-implementation.cpp(276): warning C4309: 'initializing': truncation of constant value
+c:\users\bhaskar\documents\visual studio 2015\projects\opencv\opencv\rrt-star-implementation.cpp(277): warning C4305: 'initializing': truncation from '__int64' to 'int'
+c:\users\bhaskar\documents\visual studio 2015\projects\opencv\opencv\rrt-star-implementation.cpp(277): warning C4309: 'initializing': truncation of constant value
+c:\users\bhaskar\documents\visual studio 2015\projects\opencv\opencv\rrt-star-implementation.cpp(516): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+c:\users\bhaskar\documents\visual studio 2015\projects\opencv\opencv\rrt-star-implementation.cpp(838): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\users\bhaskar\documents\visual studio 2015\projects\opencv\opencv\rrt-star-implementation.cpp(897): warning C4305: 'initializing': truncation from '__int64' to 'int'
+c:\users\bhaskar\documents\visual studio 2015\projects\opencv\opencv\rrt-star-implementation.cpp(897): warning C4309: 'initializing': truncation of constant value
+c:\users\bhaskar\documents\visual studio 2015\projects\opencv\opencv\rrt-star-implementation.cpp(898): warning C4305: 'initializing': truncation from '__int64' to 'int'
+c:\users\bhaskar\documents\visual studio 2015\projects\opencv\opencv\rrt-star-implementation.cpp(898): warning C4309: 'initializing': truncation of constant value
+c:\users\bhaskar\documents\visual studio 2015\projects\opencv\opencv\rrt-star-implementation.cpp(1096): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\bhaskar\documents\visual studio 2015\projects\opencv\opencv\rrt-star-implementation.cpp(1106): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\bhaskar\documents\visual studio 2015\projects\opencv\opencv\rrt-star-implementation.cpp(1107): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+  Opencv.vcxproj -> C:\Users\Bhaskar\documents\visual studio 2015\Projects\Opencv\x64\Debug\Opencv.exe
+  Opencv.vcxproj -> C:\Users\Bhaskar\documents\visual studio 2015\Projects\Opencv\x64\Debug\Opencv.pdb (Full PDB)
