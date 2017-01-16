@@ -6,4 +6,5 @@ This is C++ implementation of following type:
 3) RRT\* with RRT\*.<br />
 4) RRT\* with goal Rooted RRT\*. <br />
 
-Description is not enough to understand whole process. Will modify it once paper will be published. :)
+The name of main algorithm is the result of process. Looking for a new name.
+For any queries regarding the implementation or discussion on different things like complexity and scalability feel free to contact at iiita.coder@gmail.com
