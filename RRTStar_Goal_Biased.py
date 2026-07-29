@@ -17,7 +17,7 @@ p = 2
 
 class RRTAlgorithm(object):
     def __init__(self, source, goal, nodes): #initial and destination coordinates and number of nodes
-        print source, goal
+        print(source, goal)
         self.costMap = [[10000000000 for x in range(YDIM)] for x in range(XDIM)]
         self.path = None
         self.goalNode = None
@@ -54,7 +54,7 @@ class RRTAlgorithm(object):
     def updateSubtreCost(self, nde):
         for i in nde.children:
             if self.costMap[i.point[0]][ i.point[1]] < self.costMap[nde.point[0]][ nde.point[1]] + hypot(i.point[0]-nde.point[0], i.point[1]-nde.point[1]):
-                print "yes"
+                print("yes")
             self.costMap[i.point[0]][ i.point[1]] = self.costMap[nde.point[0]][ nde.point[1]] + hypot(i.point[0]-nde.point[0], i.point[1]-nde.point[1])
             self.updateSubtreCost(i)
 
@@ -212,7 +212,7 @@ class RRTAlgorithm(object):
         self.goalNode = nde
         path = []
         while nde.parent != None:
-            print nde.point, nde.cost
+            print(nde.point, nde.cost)
             path.append(nde.point)
             pygame.draw.line(screen, bright, nde.point, nde.parent.point)
             pygame.display.update()
@@ -223,7 +223,7 @@ class RRTAlgorithm(object):
             for e in pygame.event.get():
                 if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
                     sys.exit("Leaving.")
-        print 'count', count
+        print('count', count)
         self.path = path
         for i in range(10000-count):
             rand = self.generatePoints(Pointmap)
@@ -234,9 +234,9 @@ class RRTAlgorithm(object):
                     sys.exit("Leaving.")
 
     def printchildren(self, nde):
-        print nde.point, nde.cost
+        print(nde.point, nde.cost)
         for i in nde.children:
-            print i.point, i.cost
+            print(i.point, i.cost)
 
     def check(self, point , goal): # checking if currently added node is at goal or not
         if point[0] > goal[0]-5 and point[0] < goal[0]+5 and point[1] > goal[1]-5 and point[1] < goal[1]+5:

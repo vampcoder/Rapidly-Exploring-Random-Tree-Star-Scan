@@ -25,7 +25,7 @@ class RRTAlgorithm(object):
         self.getSourceAndGoal()
         global XDIM, YDIM
         XDIM, YDIM, z = img.shape
-        print XDIM, YDIM
+        print(XDIM, YDIM)
         self.costMap = [[10000000000 for x in range(YDIM)] for x in range(XDIM)]
         self.path = None
         self.goalNode = None
@@ -177,7 +177,7 @@ class RRTAlgorithm(object):
             #print "rubbed"
             #time.sleep(10)
             #cv2.imshow('rubbed', img)
-            #cv2.waitKey(0)
+            #cv2.waitKey(1)
 
         for i in range(len(nodes)):
             pnt = nodes[i][0]
@@ -227,7 +227,7 @@ class RRTAlgorithm(object):
         self.goalNode = nde
         path = []
         while nde.parent != None:
-            print nde.point, nde.cost
+            print(nde.point, nde.cost)
             path.append(nde.point)
             cv2.line(img, tuple(nde.point), tuple(nde.parent.point), (200, 200,200))
             cv2.imshow('image', img)
@@ -236,7 +236,7 @@ class RRTAlgorithm(object):
 
             if nde.parent == nde:
                 break
-        print 'count', count
+        print('count', count)
         self.path = path
         for i in range(1000000-count):
             current = self.addConnections(Points, self.source)
@@ -244,9 +244,9 @@ class RRTAlgorithm(object):
             k = cv2.waitKey(1)
 
     def printchildren(self, nde):
-        print nde.point, nde.cost
+        print(nde.point, nde.cost)
         for i in nde.children:
-            print i.point, i.cost
+            print(i.point, i.cost)
 
     def check(self, point , goal): # checking if currently added node is at goal or not
         if point[0] > goal[0]-5 and point[0] < goal[0]+5 and point[1] > goal[1]-5 and point[1] < goal[1]+5:
@@ -263,17 +263,17 @@ class RRTAlgorithm(object):
                 # cv2.circle(img, (x, y), 100, (255, 0, 0), -1)
                 if not flag:
                     self.source = x, y
-                    print self.source
+                    print(self.source)
                     flag = True
                 else:
                     self.goal = x, y
-                    print self.goal
+                    print(self.goal)
 
     def getSourceAndGoal(self):
             cv2.namedWindow('image')
             cv2.setMouseCallback('image', self.draw_circle)
             cv2.imshow('image', img)
-            cv2.waitKey(0)
+            cv2.waitKey(1)
 
     def step_from_to(self,p1, p2): #returns point with at most epsilon distance from nearest neighbour in the direction of randomly generated point
         if self.dist(p1, p2) < EPSILON:

@@ -193,7 +193,7 @@ class RRTmodifiedAlgo():
 
     def printString(self, str):
         if self.turn == 1:
-            print str
+            print(str)
 
     def storeleaves(self, rrtnode): #for storing leaf nodes
         #print rrtnode.children
@@ -228,7 +228,7 @@ class RRTmodifiedAlgo():
             nearest_neighbour = ret[1]
             new_point = self.step_from_to(nearest_neighbour, rand)
             if new_point[0] == nearest_neighbour[0] and new_point[1] == nearest_neighbour[1]:
-                print "same point"
+                print("same point")
                 continue
 
             if not self.check_for_black(nearest_neighbour, new_point):
@@ -307,7 +307,7 @@ class RRTmodifiedAlgo():
         if self.goalFound:
             return
         #self.storeleaves(self.RRTree)
-        print len(self.leafNodes)
+        print(len(self.leafNodes))
         self.goalBiastempRRT()
         self.removegeneratedLeafNodes()
         self.showCurrentTree(self.RRTree)
@@ -389,17 +389,17 @@ class RRTmodifiedAlgo():
             #cv2.circle(img, (x, y), 100, (255, 0, 0), -1)
             if not flag:
                 sx, sy = x, y
-                print sx, sy
+                print(sx, sy)
                 flag = True
             else:
                 dx, dy = x, y
-                print dx, dy
+                print(dx, dy)
 
     def getSourceAndGoal(self):
         cv2.namedWindow('image')
         cv2.setMouseCallback('image', self.draw_circle)
         cv2.imshow('image', img)
-        cv2.waitKey(0)
+        cv2.waitKey(1)
 
     def checkIfPathExist(self, p): # Checks if direct path has been found using RRT only
         if p[0] < self.goal[0] + 5 and p[1] < self.goal[1] + 5 and p[0] > self.goal[0] - 5 and p[1] > self.goal[1] - 5:
@@ -416,11 +416,11 @@ class RRTmodifiedAlgo():
         self.img = arr
         while not self.check_goal() and not self.goalFound:
             self.markVisibleArea(img, self.img, self.current[1], self.current[0])
-            print "visible marked"
+            print("visible marked")
             self.growRRT()
-            print "Tree has been grown"
+            print("Tree has been grown")
 
-        print "goal Reached"
+        print("goal Reached")
 
 img = cv2.imread('Images/obstacle.png')
 

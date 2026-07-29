@@ -70,7 +70,7 @@ class RRTmodifiedAlgo():
         i = 0
         #cv2.circle(self.img, pnt, 2, (0, 255, 255), 1)
         #cv2.imshow('image', self.img)
-        #cv2.waitKey(0)
+        #cv2.waitKey(1)
         #print "entered Black"
         while not self.check_same(t1, p2):
             t1 = [p1[0] + i * cos(theta), p1[1] + i * sin(theta)]
@@ -92,7 +92,7 @@ class RRTmodifiedAlgo():
         i = 0
         #cv2.circle(self.img, pnt, 2, (0, 255, 255), 1)
         #cv2.imshow('image', self.img)
-        #cv2.waitKey(0)
+        #cv2.waitKey(1)
         while not self.check_same(t1, p2):
             t1 = [int(p1[0] + i * cos(theta)), int(p1[1] + i * sin(theta))]
             if self.turn == 1:
@@ -110,22 +110,22 @@ class RRTmodifiedAlgo():
             return False
         ret = self.black.search(nn, 1000000000000000000000, None, None)
         if self.turn == 1:
-            print ret[0]
+            print(ret[0])
         if ret[0] < 1:
             return True
         return False
 
     def printString(self, str):
         if self.turn == 1:
-            print str
+            print(str)
 
     def growRRT(self):
-        print "queus", self.queue.empty()
-        print 'Current ', self.current
+        print("queus", self.queue.empty())
+        print('Current ', self.current)
         count = 0
         X, Y, Z = img.shape
         cv2.imshow('self image', img)
-        cv2.waitKey(0)
+        cv2.waitKey(1)
         cv2.destroyAllWindows()
         img1 = self.img
         cv2.imshow('image1', img1)
@@ -148,7 +148,7 @@ class RRTmodifiedAlgo():
                         cv2.waitKey(1)
                         nde = node(new_point, [], ret[2], True)
                         if self.checkIfPathExist(new_point):
-                            print "goal Found"
+                            print("goal Found")
 
                             self.goalFound = True
                         ret[2].add_child(nde)
@@ -218,7 +218,7 @@ class RRTmodifiedAlgo():
 
         cv2.imshow('image', visibleImg)
         cv2.imshow('original', originalImg)
-        cv2.waitKey(0)
+        cv2.waitKey(1)
         self.img = visibleImg
 
     def draw_circle(self, event, x, y, flags, param):
@@ -228,17 +228,17 @@ class RRTmodifiedAlgo():
             #cv2.circle(img, (x, y), 100, (255, 0, 0), -1)
             if not flag:
                 sx, sy = x, y
-                print sx, sy
+                print(sx, sy)
                 flag = True
             else:
                 dx, dy = x, y
-                print dx, dy
+                print(dx, dy)
 
     def getSourceAndGoal(self):
         cv2.namedWindow('image')
         cv2.setMouseCallback('image', self.draw_circle)
         cv2.imshow('image', img)
-        cv2.waitKey(0)
+        cv2.waitKey(1)
 
     def checkIfPathExist(self, p): # Checks if direct path has been found using RRT only
         if p[0] < self.goal[0] + 5 and p[1] < self.goal[1] + 5 and p[0] > self.goal[0] - 5 and p[1] > self.goal[1] - 5:
@@ -260,10 +260,10 @@ class RRTmodifiedAlgo():
                 continue
             flag = True
 
-        print "heuristic ", p.nde.point
+        print("heuristic ", p.nde.point)
         cv2.circle(self.img, tuple(p.nde.point), 3, (0, 255, 0), 3)
         cv2.imshow('image1', self.img)
-        cv2.waitKey(0)
+        cv2.waitKey(1)
 
         nde = p.nde
         while nde.parent.parent != None:
@@ -279,13 +279,13 @@ class RRTmodifiedAlgo():
         self.img = arr
         while not self.check_goal() and not self.goalFound:
             self.markVisibleArea(img, self.img, self.current[1], self.current[0])
-            print "visible marked"
+            print("visible marked")
             #time.sleep(5)
             self.growRRT()
-            print "Tree has been grown"
+            print("Tree has been grown")
             #time.sleep(5)
             self.walk_step()
-            print "Step has been taken"
+            print("Step has been taken")
             time.sleep(5)
             cv2.destroyAllWindows()
 

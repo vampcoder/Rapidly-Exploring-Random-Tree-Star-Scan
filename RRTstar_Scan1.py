@@ -6,7 +6,7 @@ from kdTree import node
 import random
 import copy
 import time
-import Queue as Q
+import queue as Q
 
 #global Declarations
 sx, sy = -1, -1
@@ -183,7 +183,7 @@ class RRTmodifiedAlgo():
 
     def printString(self, str):
         if self.turn == 1:
-            print str
+            print(str)
 
     def storeleaves(self, rrtnode): #for storing leaf nodes
         #print rrtnode.children
@@ -217,7 +217,7 @@ class RRTmodifiedAlgo():
     def checkCost(self, root):
         ret = self.Points.search(root.point, 1000000000000000000, None, None, None, None, None)
         if root.cost != ret[2].cost:
-            print root.cost, ret[2].cost, ret[0]
+            print(root.cost, ret[2].cost, ret[0])
         for i in root.children:
             self.checkCost(i)
         pass
@@ -235,7 +235,7 @@ class RRTmodifiedAlgo():
             nearest_neighbour = ret[1]
             new_point = self.step_from_to(nearest_neighbour, rand)
             if new_point[0] == nearest_neighbour[0] and new_point[1] == nearest_neighbour[1]:
-                print "same point"
+                print("same point")
                 continue
 
             if not self.check_for_black(nearest_neighbour, new_point):
@@ -270,7 +270,7 @@ class RRTmodifiedAlgo():
         nde = self.Points.search(rand, 100000000000000, None, None, None, None, None)[2]
         while nde.parent != None:
             nde = nde.parent
-        print 'nde', nde.point, self.current
+        print('nde', nde.point, self.current)
         time.sleep(100)
 
     def removegeneratedLeafNodes(self):
@@ -319,7 +319,7 @@ class RRTmodifiedAlgo():
             if self.checkIfGoalFound(new_point):
                 self.goalFound = True
                 self.goalNode = self.Points.search(self.goal, 1000000000000000000, None, None, None, None, None)[2]
-        print 'count', count
+        print('count', count)
 
     def recPrint(self, point):
         if point.left != None:
@@ -346,7 +346,7 @@ class RRTmodifiedAlgo():
         for i in self.steps:
             cv2.line(self.treeimage, tuple(reversed(i[0])), tuple(reversed(i[1])), 200, 1)
         # cv2.imshow('new_tree', self.treeimage)
-        # cv2.waitKey(0)
+        # cv2.waitKey(1)
 
     def growRRT(self, count):
         self.printWholeTree()
@@ -355,7 +355,7 @@ class RRTmodifiedAlgo():
         time.sleep(100)
         if self.goalFound:
             return
-        print len(self.leafNodes)
+        print(len(self.leafNodes))
         self.goalBiastempRRT()
         self.removegeneratedLeafNodes()
 
@@ -424,17 +424,17 @@ class RRTmodifiedAlgo():
             #cv2.circle(img, (x, y), 100, (255, 0, 0), -1)
             if not flag:
                 sx, sy = y, x
-                print sx, sy
+                print(sx, sy)
                 flag = True
             else:
                 dx, dy = y, x
-                print dx, dy
+                print(dx, dy)
 
     def getSourceAndGoal(self):
         cv2.namedWindow('image')
         cv2.setMouseCallback('image', self.draw_circle)
         cv2.imshow('image', img)
-        cv2.waitKey(0)
+        cv2.waitKey(1)
 
     def checkIfPathExist(self, p): # Checks if direct path has been found using RRT only
         if p[0] < self.goal[0] + 5 and p[1] < self.goal[1] + 5 and p[0] > self.goal[0] - 5 and p[1] > self.goal[1] - 5:
@@ -456,18 +456,18 @@ class RRTmodifiedAlgo():
         while not self.goalFound:
             self.markVisibleArea(img)
             # cv2.imshow('image', self.img)
-            # k = cv2.waitKey(0)
-            print "visible marked"
+            # k = cv2.waitKey(1)
+            print("visible marked")
             if count == 0:
                 self.growRRT(50)
             else:
                 self.growRRT(10)
             count = count + 1
-            print "Tree has been grown"
-        print "goal Reached"
+            print("Tree has been grown")
+        print("goal Reached")
         self.printWholeTree()
         cv2.imshow('finalpath', self.treeimage)
-        cv2.waitKey(0)
+        cv2.waitKey(1)
 
 start = RRTmodifiedAlgo()
 

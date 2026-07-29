@@ -33,7 +33,7 @@ def chooseParent(nn,newnode,nodes):
 def reWire(nodes,newnode,pygame,screen):
  	white = 255, 240, 200
         black = 20, 20, 40
-	for i in xrange(len(nodes)):
+	for i in range(len(nodes)):
     	   p = nodes[i]
 	   if p!=newnode.parent and dist([p.x,p.y],[newnode.x,newnode.y]) <RADIUS and newnode.cost+dist([p.x,p.y],[newnode.x,newnode.y]) < p.cost:
 	      pygame.draw.line(screen,white,[p.x,p.y],[p.parent.x,p.parent.y])  

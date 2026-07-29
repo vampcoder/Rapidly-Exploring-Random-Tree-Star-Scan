@@ -1,5 +1,5 @@
 import math
-import Queue
+import queue
 class node:
     def __init__(self, point, children, parent, actual, cost = 0): # node of RRT
         self.children = children # list of all children as a sigle node may have multiple number of nodes
@@ -215,13 +215,13 @@ class kdTree(object):
     def print_tree(self):
         if self.left != None:
             self.left.print_tree()
-        print self.point, self.axis
+        print(self.point, self.axis)
         if self.right != None:
             self.right.print_tree()
 
 dim = 2
 def main():
-    print 'Enter Points'
+    print('Enter Points')
     n = int(input()) # number of points
     global dim
     temp = int(input()) #number of dimensions
@@ -240,16 +240,16 @@ def main():
     root.print_tree()
 
     '''
-    print "Enter a point to search"
+    print("Enter a point to search")
     point = []
     for i in range(dim):
         point.append(int(input()))
 
     ret = root.search(point, 1000000000000, None, None)
-    print "Nearest Neighbour "
-    print ret
+    print("Nearest Neighbour ")
+    print(ret)
     '''
-    print " "
+    print(" ")
 
     #ret = root.findMin(0, dim)
     #print ret.point, ret.axis
@@ -259,9 +259,9 @@ def main():
     #print ret.point, ret.axis
     #ret = root.findMin(1, dim, None)
     ret = root.search([51, 75], 100000000000000000, None, None, None, None, None)
-    print " "
-    print ret[1]
-    print " "
+    print(" ")
+    print(ret[1])
+    print(" ")
     ret[3].deleteNode(ret[4])
     #ret.deleteNode()
     root.print_tree()

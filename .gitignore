@@ -1,0 +1,21 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Compiled C++ binaries
+*.out
+*.o
+*.dSYM
+
+# Virtual Environments
+.venv/
+venv/
+env/

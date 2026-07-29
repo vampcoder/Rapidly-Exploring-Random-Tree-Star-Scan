@@ -13,7 +13,7 @@ dim = 2
 
 class RRTAlgorithm(object):
     def __init__(self, source, goal, nodes): #initial and destination coordinates and number of nodes
-        print source, goal
+        print(source, goal)
         self.start(source, goal, nodes)
 
     def start(self, source, goal, nodes):
